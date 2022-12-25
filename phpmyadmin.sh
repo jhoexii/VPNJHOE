@@ -13,20 +13,32 @@ sudo chmod 777 /usr/share/phpmyadmin/tmp
 Alias /phpmyadmin /usr/share/phpmyadmin
 Alias /phpMyAdmin /usr/share/phpmyadmin
  
-<Directory /usr/share/phpmyadmin/>
-   AddDefaultCharset UTF-8
-   <IfModule mod_authz_core.c>
-      <RequireAny>
-      Require all granted
-     </RequireAny>
-   </IfModule>
-</Directory>
- 
 <Directory /usr/share/phpmyadmin/setup/>
    <IfModule mod_authz_core.c>
      <RequireAny>
        Require all granted
      </RequireAny>
+   </IfModule>
+</Directory>
+<Directory /usr/share/phpMyAdmin/>
+   AddDefaultCharset UTF-8
+
+   <IfModule mod_authz_core.c>
+     # Apache 2.4
+     <RequireAny>
+       # ADD following line:
+       Require all granted
+       Require ip 127.0.0.1
+       Require ip ::1
+     </RequireAny>
+   </IfModule>
+   <IfModule !mod_authz_core.c>
+     # Apache 2.2
+     # CHANGE following 2 lines:
+     Order Allow,Deny
+     Allow from All
+     Allow from 127.0.0.1
+     Allow from ::1
    </IfModule>
 </Directory>
 EOM
