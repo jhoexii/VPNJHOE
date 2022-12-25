@@ -46,8 +46,8 @@ CREATE USER 'codeph'@'localhost' IDENTIFIED BY 'codeph';
 GRANT ALL ON codeph.* TO 'codeph'@'localhost';
 FLUSH PRIVILEGES;
 exit
-mysql -h localhost -u root
-UPDATE mysql.user SET authentication_string=null WHERE User='root';
-ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'codeph';
-FLUSH PRIVILEGES;
-exit;
+#mysql -h localhost -u root
+#UPDATE mysql.user SET authentication_string=null WHERE User='root';
+#ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'codeph';
+#FLUSH PRIVILEGES;
+#exit;
