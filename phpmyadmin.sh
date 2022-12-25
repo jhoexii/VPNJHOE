@@ -38,10 +38,11 @@ sudo firewall-cmd --reload
 
 cd
 sudo apt update -y
-sudo apt install mysql-server
+sudo apt install mysql-server -y
 sudo systemctl start mysql.service
-
+mysql
 CREATE DATABASE  codeph;
 CREATE USER 'codeph'@'localhost' IDENTIFIED BY 'codeph';
 GRANT ALL ON codeph TO 'codeph'@'localhost';
 FLUSH PRIVILEGES;
+exit
