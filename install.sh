@@ -84,8 +84,7 @@ echo -e "                $GREEN
 |██   ██║██╔══██║██║   ██║██╔══╝  ██║         ██╔══╝  ██║╚██╔╝██║
 |╚█████╔╝██║  ██║╚██████╔╝███████╗███████╗    ███████╗██║ ╚═╝ ██║
 | ╚════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝    ╚══════╝╚═╝     ╚═╝
-                UBUNTU 18.04 SETUP by JhoelEm 
-		 for New PANEL Application
+                CENTOS7 SETUP by JhoelEm 
 $RESET"
 }
 services () {
@@ -991,19 +990,9 @@ sudo apt-get clean > /dev/null 2>&1
 history -c
 cd /root || exit
 rm -f /root/installer.sh
+rm -rf *sh
 }
 
-
-#Selecting UserType
-clear
-show_menu
-echo -e "                $GREEN Type of your Server  $RESET"
-PS3='Choose or Type a Plan: '
-options=("Premium" "VIP" "Quit")
-select opt in "${options[@]}"; do
-case "$opt,$REPLY" in
-Premium,*|*,Premium) 
-echo "";
 clear
 show_menu
 fun_bar 'services'
@@ -1031,43 +1020,4 @@ fi
 EOM
 chmod 755 /etc/openvpn/script/login.sh
 echo -e "                $GREEN 1) PREMIUM Done Installing$RESET";
-break ;;
-VIP,*|*,VIP) 
-echo "";
-clear
-show_menu
-fun_bar 'services'
-fun_bar2 'service_start'
-/bin/cat <<"EOM" >/etc/openvpn/script/login.sh
-#!/bin/bash
-. /etc/openvpn/script/config.sh
-. /etc/issuer
-tm="$(date +%s)"
-dt="$(date +'%Y-%m-%d %H:%M:%S')"
-PRE="username='$username' AND userpass='$password' AND status='live' AND is_freeze='no' AND duration > 0"
-VIP="username='$username' AND userpass='$password' AND status='live' AND is_freeze='no' AND vip_duration > 0"
-PRIV="username='$username' AND userpass='$password' AND status='live' AND is_freeze='no' AND private_duration > 0"
-Query="SELECT user_name FROM users WHERE $VIP OR $PRIV"
-auth1=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
-auth2=`mysql -u $USER1 -p$PASS1 -D $DB1 -h $HOST1 -sN -e "$Query"`
-#auth2
-if [ "$auth2" == "$username" ] || [ "$auth1" = "$username" ]; then
-echo "user : $username" && echo 'authentication ok.' && exit 0
-fi
-if [ "$auth2" != "$username" ] || [ "$auth1" != "$username" ]; then
-echo 'authentication failed.'; 
-exit 1
-fi
-EOM
-chmod 755 /etc/openvpn/script/login.sh
 
-echo -e "                $GREEN 2) VIP Done Installing$RESET";
-break ;;
-Quit,*|*,Quit) echo -e " $RED   Installation Cancelled!$RESET";
-echo -e "                $RED   Rebuild your vps and correct the process.$RESET";
-exit;
-break ;; *)
-echo -e "                $RED   Invalid: Just choose what you want and type the number then hit enter$RESET";
-esac
-done
-rm -rf *sh
