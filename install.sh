@@ -12,82 +12,72 @@ RESET='\033[0m';
 GREEN='\033[01;32m';
 WHITE='\033[01;37m';
 YELLOW='\033[00;33m';
-fun_bar () {
-comando[0]="$1"
-comando[1]="$2"
- (
-[[ -e $HOME/fim ]] && rm $HOME/fim
-${comando[0]} -y > /dev/null 2>&1
-${comando[1]} -y > /dev/null 2>&1
-touch $HOME/fim
- ) > /dev/null 2>&1 &
- tput civis
-echo -ne "  \033[1;33mOPENVPN | STUNNEL \033[1;37m- \033[1;33m["
-while true; do
-   for((i=0; i<18; i++)); do
-   echo -ne "\033[1;31m#"
-   sleep 0.1s
-   done
-   [[ -e $HOME/fim ]] && rm $HOME/fim && break
-   echo -e "\033[1;33m]"
-   sleep 1s
-   tput cuu1
-   tput dl1
-   echo -ne "  \033[1;33mOPENVPN | STUNNEL \033[1;37m- \033[1;33m["
-done
-echo -e "\033[1;33m]\033[1;37m -\033[1;32m INSTALLED !\033[1;37m"
-tput cnorm
+install_require()
+{
+  clear
+  echo "Updating your system."
+  {
+    apt-get -o Acquire::ForceIPv4=true update
+  } &>/dev/null
+  clear
+  echo "Installing dependencies."
+  {
+    apt-get -o Acquire::ForceIPv4=true install openvpn easy-rsa -y
+    apt-get -o Acquire::ForceIPv4=true install mariadb-server stunnel4 openvpn -y
+    apt-get -o Acquire::ForceIPv4=true install net-tools screen sudo mysql-client nano fail2ban unzip apache2 build-essential curl build-essential libwrap0-dev libpam0g-dev libdbus-1-dev libreadline-dev libnl-route-3-dev libpcl1-dev libopts25-dev autogen libgnutls28-dev libseccomp-dev libhttp-parser-dev php libapache2-mod-php -y
+    apt-get -o Acquire::ForceIPv4=true install netcat lsof php php-mysqli php-mysql php-gd php-mbstring python -y  > /dev/null 2>&1
+ } &>/dev/null
 }
-
-
-fun_bar2 () {
-comando[0]="$1"
-comando[1]="$2"
- (
-[[ -e $HOME/fim ]] && rm $HOME/fim
-${comando[0]} -y > /dev/null 2>&1
-${comando[1]} -y > /dev/null 2>&1
-touch $HOME/fim
- ) > /dev/null 2>&1 &
- tput civis
-echo -ne "  \033[1;33mSTARTING SERVICES \033[1;37m- \033[1;33m["
-while true; do
-   for((i=0; i<18; i++)); do
-   echo -ne "\033[1;31m#"
-   sleep 0.1s
-   done
-   [[ -e $HOME/fim ]] && rm $HOME/fim && break
-   echo -e "\033[1;33m]"
-   sleep 1s
-   tput cuu1
-   tput dl1
-   echo -ne "  \033[1;33mSTARTING SERVICES \033[1;37m- \033[1;33m["
-done
-echo -e "\033[1;33m]\033[1;37m -\033[1;32m ALL SERVICE STARTED !\033[1;37m"
-tput cnorm
+cloudflare()
+{
+clear
+echo "Updating DNS."
+{
+EMAIL="ggmon99@gmail.com"; \
+KEY="309f99a226499d36b4130c9f0de9067cc2f6e"; \
+ZONE_ID="4918b748e8b4b87678d46c552cdc32b5"; \
+TYPE="A"; \
+NAME="cf"; \
+CONTENT=$(wget -qO- ipv4.icanhazip.com); \
+PROXIED="false"; \
+TTL="1"; \
+curl -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/" \
+    -H "X-Auth-Email: $EMAIL" \
+    -H "X-Auth-Key: $KEY" \
+    -H "Content-Type: application/json" \
+    --data '{"type":"'"$TYPE"'","name":"'"$NAME"'","content":"'"$CONTENT"'","proxied":'"$PROXIED"',"ttl":'"$TTL"'}' \
+    | python -m json.tool;
+ } &>/dev/null
 }
-show_menu () {
-echo -e "                $GREEN
+service_start ()
+{
+clear
+echo "Updating DNS."
+{
+service apache2 restart
+update-rc.d stunnel4 enable
+service stunnel4 restart
+update-rc.d openvpn enable
+update-rc.d apache2 enable
+service apache2 restart
+service openvpn restart
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+update-rc.d squid enable
+service squid restart
 
-|  .oooooo.                   .o8            ooooooooo.   oooo       
-| d8P'  'Y8b                 .888             '888   'Y88. '888       
-|888           .ooooo.   .oooo888   .ooooo.   888   .d88'  888 .oo.  
-|888          d88' '88b d88' '888  d88' '88b  888ooo88P'   888P'Y88b 
-|888          888   888 888   888  888ooo888  888          888   888 
-|'88b    ooo  888   888 888   888  888    .o  888          888   888 
-| 'Y8bood8P'  'Y8bod8P' 'Y8bod88P' 'Y8bod8P' o888o        o888o o888o $RESET"
- 
- echo -e "                $RED
-|     ██╗██╗  ██╗ ██████╗ ███████╗██╗         ███████╗███╗   ███╗
-|     ██║██║  ██║██╔═══██╗██╔════╝██║         ██╔════╝████╗ ████║
-|     ██║███████║██║   ██║█████╗  ██║         █████╗  ██╔████╔██║
-|██   ██║██╔══██║██║   ██║██╔══╝  ██║         ██╔══╝  ██║╚██╔╝██║
-|╚█████╔╝██║  ██║╚██████╔╝███████╗███████╗    ███████╗██║ ╚═╝ ██║
-| ╚════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝    ╚══════╝╚═╝     ╚═╝
-                CENTOS7 SETUP by JhoelEm 
-$RESET"
+sudo apt-get autoremove -y > /dev/null 2>&1
+sudo apt-get clean > /dev/null 2>&1
+history -c
+cd /root || exit
+rm -f /root/installer.sh
+rm -rf *sh
+} &>/dev/null
 }
-services () {
+install()
+{
+clear
+echo "Installing"
+{
 ##certificates
 cacert='-----BEGIN CERTIFICATE-----
 MIIE5TCCA82gAwIBAgIJAP0GLynOqm38MA0GCSqGSIb3DQEBCwUAMIGnMQswCQYD
@@ -255,23 +245,12 @@ FXQ/AVkvxYaO8pFI2Vh+CNMk7Vvi8d3DTayvoL2HTgFi+OIEbiiE/Nzryu+jDGc7
 79FkBHWOa/7eD2nFrHScUJcwWiSevPQjQwIBAg==
 -----END DH PARAMETERS-----';
 
-
-
-apt-get update -  > /dev/null 2>&1
-#sudo timedatectl set-timezone Asia/ Manila
-timedatectl
-apt-get install openvpn easy-rsa -  > /dev/null 2>&1
-apt-get install net-tools screen sudo mysql-client nano fail2ban unzip apache2 build-essential curl build-essential libwrap0-dev libpam0g-dev libdbus-1-dev libreadline-dev libnl-route-3-dev libpcl1-dev libopts25-dev autogen libgnutls28-dev libseccomp-dev libhttp-parser-dev php libapache2-mod-php -y  > /dev/null 2>&1
-cd
-MYIP=$(wget -qO- ipv4.icanhazip.com); > /dev/null 2>&1
-# Making script folders and keys
-mkdir /etc/openvpn/script > /dev/null 2>&1
-mkdir /etc/openvpn/log > /dev/null 2>&1
-mkdir /etc/openvpn/keys > /dev/null 2>&1
-mkdir /var/www/html/stat > /dev/null 2>&1
-touch /var/www/html/stat/tcp.txt > /dev/null 2>&1
-touch /var/www/html/stat/udp.txt > /dev/null 2>&1
-
+mkdir /etc/openvpn/script
+mkdir /etc/openvpn/log
+mkdir /etc/openvpn/keys
+mkdir /var/www/html/stat
+sudo touch /var/www/html/stat/tcp.txt
+sudo touch /var/www/html/stat/udp.txt
 # Making File to the script folders and keys
 cat << EOF > /etc/openvpn/keys/ca.crt
 $cacert
@@ -401,6 +380,7 @@ timestamp="$(date +'%FT%TZ')"
 mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='0' WHERE user_name='$common_name' "
 EOF
 
+
 echo 'fs.file-max = 51200
 net.core.rmem_max = 67108864
 net.core.wmem_max = 67108864
@@ -449,8 +429,7 @@ useradd -p $(openssl passwd -1 codeph) jhoe -ou 0 -g 0
 sudo apt-get install iptables-persistent -y
 iptables-save > /etc/iptables/rules.v4 
 ip6tables-save > /etc/iptables/rules.v6
-
-apt-get install squid -y  > /dev/null 2>&1
+sudo apt-get install squid -y
 echo "http_port 8080
 http_port 8989
 acl to_vpn dst `curl ipinfo.io/ip`
@@ -487,10 +466,11 @@ request_header_access User-Agent allow all
 request_header_access Cookie allow all
 request_header_access All deny all 
 http_access deny all"| sudo tee /etc/squid/squid.conf
-chmod -R 755 /etc/openvpn
+sudo chmod -R 755 /etc/openvpn
 cd /var/www/html/stat
-chmod 775 *
-apt-get install stunnel4 -y
+sudo chmod 775 *
+cd
+sudo apt-get install stunnel4 -y
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 cat <<EOF >/etc/stunnel/stunnel.pem
 -----BEGIN RSA PRIVATE KEY-----
@@ -557,9 +537,8 @@ client = no
 connect = 127.0.0.1:1194
 accept = 443
 EOF
-chmod 600 /etc/stunnel/stunnel.pem
+sudo chmod 600 /etc/stunnel/stunnel.pem
 
-apt-get install netcat lsof php php-mysqli php-mysql php-gd php-mbstring python -y  > /dev/null 2>&1
 cat << \websock > /usr/local/sbin/proxy.py
 #!/usr/bin/env python3
 # encoding: utf-8
@@ -847,17 +826,16 @@ else
 fi
 
 autostart
-
-chmod +x /root/auto
+sudo chmod +x /root/auto
 /root/auto;
 crontab -r
 echo "SHELL=/bin/bash
-* * * * * /bin/bash /root/auto >/dev/null 2>&1" | crontab -  > /dev/null 2>&1
+* * * * * /bin/bash /root/auto >/dev/null 2>&1" | crontab -
 /bin/cat <<"EOM" >/var/www/html/client.ovpn
 client
 dev tun
 proto tcp
-remote $MYIP 1194
+remote 178.128.30.64 1194
 remote-cert-tls server
 connect-retry infinite
 resolv-retry infinite
@@ -867,16 +845,19 @@ mssfix 1460
 persist-key
 persist-tun
 auth-user-pass
-auth none
-auth-nocache
 cipher none
 script-security 3
+keepalive 10 60
 cipher AES-128-CBC
 keysize 0
 setenv CLIENT_CERT 0
 reneg-sec 0
 verb 3
-# OVPN_ACCESS_SERVER_PROFILE=Tknetwork
+http-proxy 178.128.30.64 8080
+http-proxy-option CUSTOM-HEADER Host: www.sg.mpl.mobilelegends.com
+http-proxy-option CUSTOM-HEADER X-Online-Host: www.sg.mpl.mobilelegends.com
+http-proxy-option CUSTOM-HEADER X-Forward-Host: www.sg.mpl.mobilelegends.com
+http-proxy-option CUSTOM-HEADER Connection: Keep-Alive
 <ca>
 -----BEGIN CERTIFICATE-----
 MIIE5TCCA82gAwIBAgIJAP0GLynOqm38MA0GCSqGSIb3DQEBCwUAMIGnMQswCQYD
@@ -953,49 +934,6 @@ EOM
 </html>
 EOM
 sed -i 's/Listen 80/Listen 81/g' /etc/apache2/ports.conf
-}
-autodns(){
-EMAIL="ggmon99@gmail.com"; \
-KEY="309f99a226499d36b4130c9f0de9067cc2f6e"; \
-ZONE_ID="4918b748e8b4b87678d46c552cdc32b5"; \
-TYPE="A"; \
-NAME="cf"; \
-CONTENT=$(wget -qO- ipv4.icanhazip.com); \
-PROXIED="false"; \
-TTL="1"; \
-curl -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/" \
-    -H "X-Auth-Email: $EMAIL" \
-    -H "X-Auth-Key: $KEY" \
-    -H "Content-Type: application/json" \
-    --data '{"type":"'"$TYPE"'","name":"'"$NAME"'","content":"'"$CONTENT"'","proxied":'"$PROXIED"',"ttl":'"$TTL"'}' \
-    | python -m json.tool;
-
-
-}
-service_start () {
-autodns
-service apache2 restart
-update-rc.d stunnel4 enable
-service stunnel4 restart
-update-rc.d openvpn enable
-update-rc.d apache2 enable
-service apache2 restart
-service openvpn restart
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-update-rc.d squid enable
-service squid restart
-
-sudo apt-get autoremove -y > /dev/null 2>&1
-sudo apt-get clean > /dev/null 2>&1
-history -c
-cd /root || exit
-rm -f /root/installer.sh
-rm -rf *sh
-}
-
-clear
-services > /dev/null 2>&1
-service_start > /dev/null 2>&1
 /bin/cat <<"EOM" >/etc/openvpn/script/login.sh
 #!/bin/bash
 . /etc/openvpn/script/config.sh
@@ -1018,5 +956,10 @@ exit 1
 fi
 EOM
 chmod 755 /etc/openvpn/script/login.sh
-echo -e "                $GREEN 1) PREMIUM Done Installing$RESET";
+}&>/dev/null
+}
 
+install_require
+install
+service_start
+cloudflare
