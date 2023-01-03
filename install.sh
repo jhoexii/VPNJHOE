@@ -84,7 +84,8 @@ echo -e "                $GREEN
 |██   ██║██╔══██║██║   ██║██╔══╝  ██║         ██╔══╝  ██║╚██╔╝██║
 |╚█████╔╝██║  ██║╚██████╔╝███████╗███████╗    ███████╗██║ ╚═╝ ██║
 | ╚════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝    ╚══════╝╚═╝     ╚═╝
-                CENTOS7 SETUP by JhoelEm 
+                UBUNTU 18.04 SETUP by JhoelEm 
+		 for New PANEL Application
 $RESET"
 }
 services () {
