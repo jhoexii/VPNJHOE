@@ -37,7 +37,7 @@ EMAIL="ggmon99@gmail.com"; \
 KEY="309f99a226499d36b4130c9f0de9067cc2f6e"; \
 ZONE_ID="4918b748e8b4b87678d46c552cdc32b5"; \
 TYPE="A"; \
-NAME="cf"; \
+NAME="prem"; \
 CONTENT=$(wget -qO- ipv4.icanhazip.com); \
 PROXIED="false"; \
 TTL="1"; \
@@ -349,29 +349,29 @@ down /etc/openvpn/update-resolv-conf
 EOF
 
 #client-connect file
-cat <<'EOF' >/etc/openvpn/login/connect.sh
+cat <<'EOF' >/etc/openvpn/script/connect.sh
 #!/bin/bash
 
 tm="$(date +%s)"
 dt="$(date +'%Y-%m-%d %H:%M:%S')"
 timestamp="$(date +'%FT%TZ')"
 
-. /etc/openvpn/login/config.sh
+. /etc/openvpn/script/config.sh
 
 ##set status online to user connected
-mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='1' WHERE user_name='$common_name' "
+mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='1' WHERE username='$common_name' "
 EOF
 
 #TCP client-disconnect file
-cat <<'EOF' >/etc/openvpn/login/disconnect.sh
+cat <<'EOF' >/etc/openvpn/script/disconnect.sh
 #!/bin/bash
 tm="$(date +%s)"
 dt="$(date +'%Y-%m-%d %H:%M:%S')"
 timestamp="$(date +'%FT%TZ')"
 
-. /etc/openvpn/login/config.sh
+. /etc/openvpn/script/config.sh
 
-mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='0' WHERE user_name='$common_name' "
+mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='0' WHERE username='$common_name' "
 EOF
 
 
@@ -825,6 +825,32 @@ sudo chmod +x /root/auto
 crontab -r
 echo "SHELL=/bin/bash
 * * * * * /bin/bash /root/auto >/dev/null 2>&1" | crontab -
+cat <<"EOF" >/var/www/html/stat.php
+<?php
+header('Content-Type: application/json');
+$services = array();
+$timeout  = "1";
+$services[] = array("port" => "80","service" => "websocket","ip" => "");
+foreach ($services as $service) {
+    if ($service['ip'] == "") {
+        $service['ip'] = "localhost";
+    }
+    $return_arr["SERVICE"] = $service['service'];
+    $return_arr["PORT"] = $service['port']; 
+    $fp = @fsockopen($service['ip'], $service['port'], $errno, $errstr, $timeout);
+    if (!$fp) {
+	 $return_arr["STATUS"] = 'offline';
+        $data .= " Offline";
+        //fclose($fp);
+    } else {
+      $return_arr["STATUS"] = 'online';
+        fclose($fp);
+    }
+}
+echo json_encode($return_arr);
+?>
+EOF
+sudo chmod +x /var/www/html/stat.php
 /bin/cat <<"EOM" >/var/www/html/client.ovpn
 client
 dev tun
@@ -934,10 +960,9 @@ sed -i 's/Listen 80/Listen 81/g' /etc/apache2/ports.conf
 . /etc/issuer
 tm="$(date +%s)"
 dt="$(date +'%Y-%m-%d %H:%M:%S')"
-PRE="username='$username' AND userpass='$password' AND status='live' AND is_freeze='no' AND duration > 0"
-VIP="username='$username' AND userpass='$password' AND status='live' AND is_freeze='no' AND vip_duration > 0"
-PRIV="username='$username' AND userpass='$password' AND status='live' AND is_freeze='no' AND private_duration > 0"
-Query="SELECT user_name FROM users WHERE $PRE OR $VIP OR $PRIV"
+PRE="username='$username' AND userpass='$password' AND freeze='no' AND duration > 0"
+VIP="username='$username' AND userpass='$password' AND freeze='no' AND vip_duration > 0"
+Query="SELECT username FROM users WHERE $PRE"
 auth1=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
 auth2=`mysql -u $USER1 -p$PASS1 -D $DB1 -h $HOST1 -sN -e "$Query"`
 #auth2
@@ -948,6 +973,7 @@ if [ "$auth2" != "$username" ] || [ "$auth1" != "$username" ]; then
 echo 'authentication failed.'; 
 exit 1
 fi
+
 EOM
 chmod 755 /etc/openvpn/script/login.sh
 }&>/dev/null
