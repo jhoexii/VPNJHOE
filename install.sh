@@ -52,7 +52,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/" 
 service_start ()
 {
 clear
-echo "Updating DNS."
+echo "Restarting service."
 {
 service apache2 restart
 update-rc.d stunnel4 enable
