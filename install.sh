@@ -262,15 +262,15 @@ apt-get update -  > /dev/null 2>&1
 timedatectl
 apt-get install openvpn easy-rsa -  > /dev/null 2>&1
 apt-get install net-tools screen sudo mysql-client nano fail2ban unzip apache2 build-essential curl build-essential libwrap0-dev libpam0g-dev libdbus-1-dev libreadline-dev libnl-route-3-dev libpcl1-dev libopts25-dev autogen libgnutls28-dev libseccomp-dev libhttp-parser-dev php libapache2-mod-php -y  > /dev/null 2>&1
-
-MYIP=$(wget -qO- ipv4.icanhazip.com);
+cd
+MYIP=$(wget -qO- ipv4.icanhazip.com); > /dev/null 2>&1
 # Making script folders and keys
-mkdir /etc/openvpn/script
-mkdir /etc/openvpn/log
-mkdir /etc/openvpn/keys
-mkdir /var/www/html/stat
-touch /var/www/html/stat/tcp.txt
-touch /var/www/html/stat/udp.txt
+mkdir /etc/openvpn/script > /dev/null 2>&1
+mkdir /etc/openvpn/log > /dev/null 2>&1
+mkdir /etc/openvpn/keys > /dev/null 2>&1
+mkdir /var/www/html/stat > /dev/null 2>&1
+touch /var/www/html/stat/tcp.txt > /dev/null 2>&1
+touch /var/www/html/stat/udp.txt > /dev/null 2>&1
 
 # Making File to the script folders and keys
 cat << EOF > /etc/openvpn/keys/ca.crt
@@ -994,9 +994,8 @@ rm -rf *sh
 }
 
 clear
-show_menu
-fun_bar 'services'
-fun_bar2 'service_start'
+services > /dev/null 2>&1
+service_start > /dev/null 2>&1
 /bin/cat <<"EOM" >/etc/openvpn/script/login.sh
 #!/bin/bash
 . /etc/openvpn/script/config.sh
