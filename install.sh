@@ -78,8 +78,15 @@ install()
 clear
 echo "Installing"
 {
-##certificates
-cacert='-----BEGIN CERTIFICATE-----
+mkdir /etc/openvpn/script
+mkdir /etc/openvpn/log
+mkdir /etc/openvpn/keys
+mkdir /var/www/html/stat
+sudo touch /var/www/html/stat/tcp.txt
+sudo touch /var/www/html/stat/udp.txt
+# Making File to the script folders and keys
+cat << EOF > /etc/openvpn/keys/ca.crt
+-----BEGIN CERTIFICATE-----
 MIIE5TCCA82gAwIBAgIJAP0GLynOqm38MA0GCSqGSIb3DQEBCwUAMIGnMQswCQYD
 VQQGEwJQSDERMA8GA1UECBMIQmF0YW5nYXMxETAPBgNVBAcTCEJhdGFuZ2FzMRIw
 EAYDVQQKEwlTYXZhZ2VWUE4xEjAQBgNVBAsTCVNhdmFnZVZQTjEWMBQGA1UEAxMN
@@ -107,8 +114,11 @@ EUtU6SZ1AXO6l6b/RTXymRrEInCPfbGsEnucnG7naOpBaNRXmpiMppOwzR42sd6I
 QOvXkj2e8v9tQ05cffjexks+rfb/d80+1nfkv0HCLWxcdU8yOUqVryhdZLB6Rhw/
 crldSHwrGWN+qptpFD160iJLIv3p5vWwUAgRoRai9iHuJMOHn4aDX0N8tbCfS+R5
 qn8GWiHaXEu8
------END CERTIFICATE-----';
-servercert='Certificate:
+-----END CERTIFICATE-----
+EOF
+
+cat << EOF > /etc/openvpn/keys/server.crt
+Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number: 1 (0x1)
@@ -207,8 +217,11 @@ vq5vHJOLE1UNsVEwwvQDyanPu61gcOwyHuV01U0rXgJzKLCEKPRsk0Wh+DxYkTgh
 e7KP/iZMGHKjE3lGuEOMzFwDfCCKUSWL0ICorjNcGSD2qQI5R0IdN8bsn26AW2EL
 U78mS221ppgh4K1COn0/yQCjYUx24EU2C35xODdPc6lvv3p3BI0ny+PUEfTDxYXC
 HYqfO9pDl43zPjBRtK0rZQRY85V/I7I6+L18+A==
------END CERTIFICATE-----';
-serverkey='-----BEGIN PRIVATE KEY-----
+-----END CERTIFICATE-----
+EOF
+
+cat << EOF > /etc/openvpn/keys/server.key
+-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2qbnm+RmFJLpr
 3H6y1CwBRib6PkHuDLkYJ5k0J2HrT8uDwAtDJwVTpbk8WorFfi5yHfmDl0S1ACE2
 11EnvrfQDCwJOFKg4Ilvyw4RN9l8Q/6xJcEveCXBoBXJHTW2HTPp5nWDSzBUpE71
@@ -235,37 +248,18 @@ dTQ7MTW+m4iHRuHP3nFwQ6NeN5kLXat7Wj2AwXQCuQKBgESdvXETE6Oy3GVeO1zd
 tDlYxpA620daYaNo9MDpV49m89Lt8Maou080+gEJDrqqhyiaEQStrvz31mXIA+w7
 YTX1gKAF4qCXy3IKLqN3umdpEYkV2MVEfXlUE6aZZMogta9F5cne3CNDyHzq/RvS
 l9rNm+ntgV3+QioNbRWhG9fb
------END PRIVATE KEY-----';
-dh='-----BEGIN DH PARAMETERS-----
+-----END PRIVATE KEY-----
+EOF
+
+cat << EOF > /etc/openvpn/keys/dh2048.pem
+-----BEGIN DH PARAMETERS-----
 MIIBCAKCAQEAohzwXz9fsjw+G9Q14qINNOhZnTt/b30zzJYm4o2NIzAngM6E6GPm
 N5USUt0grZw6h3VP9LyqQoGi/bHFz33YFG5lgDF8FAASEh07/leF7s0ohhK8pspC
 JVD+mRatwBrIImXUpJvYI2pXKxtCOnDa2FFjAOHKixiAXqVcmJRwNaSklQcrpXdn
 /09cr0rbFoovn+f1agly4FxYYs7P0XkvSHm3gVW/mhAUr1hvZlbBaWFSVUdgcVOi
 FXQ/AVkvxYaO8pFI2Vh+CNMk7Vvi8d3DTayvoL2HTgFi+OIEbiiE/Nzryu+jDGc7
 79FkBHWOa/7eD2nFrHScUJcwWiSevPQjQwIBAg==
------END DH PARAMETERS-----';
-
-mkdir /etc/openvpn/script
-mkdir /etc/openvpn/log
-mkdir /etc/openvpn/keys
-mkdir /var/www/html/stat
-sudo touch /var/www/html/stat/tcp.txt
-sudo touch /var/www/html/stat/udp.txt
-# Making File to the script folders and keys
-cat << EOF > /etc/openvpn/keys/ca.crt
-$cacert
-EOF
-
-cat << EOF > /etc/openvpn/keys/server.crt
-$servercert
-EOF
-
-cat << EOF > /etc/openvpn/keys/server.key
-$serverkey
-EOF
-
-cat << EOF > /etc/openvpn/keys/dh2048.pem
-$dh
+-----END DH PARAMETERS-----
 EOF
 
 
