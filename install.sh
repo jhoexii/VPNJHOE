@@ -962,7 +962,7 @@ tm="$(date +%s)"
 dt="$(date +'%Y-%m-%d %H:%M:%S')"
 PRE="username='$username' AND userpass='$password' AND freeze='no' AND duration > 0"
 VIP="username='$username' AND userpass='$password' AND freeze='no' AND vip_duration > 0"
-Query="SELECT username FROM users WHERE $PRE"
+Query="SELECT username FROM users WHERE xxxx"
 auth1=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
 auth2=`mysql -u $USER1 -p$PASS1 -D $DB1 -h $HOST1 -sN -e "$Query"`
 #auth2
