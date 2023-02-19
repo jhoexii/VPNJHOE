@@ -1,0 +1,90 @@
+{
+  "Servers": [
+    {
+      "Name": "Server Vmess 1",
+      "Category": "0",
+      "DomainOrIP": "45.223.170.101",
+      "SNI": "www.pldt.com.ph",
+      "Path": "nodz.ml/vmess",
+      "ID": "dc0dfb7d-32b5-41d3-92a3-cfea70cfb7c9",
+      "Flag": "ph",
+      "Port": "443"
+    },
+    {
+      "Name": "Server Vmess 2",
+      "Category": "0",
+      "DomainOrIP": "imperva.supervpn.website",
+      "SNI": "pldthome.com",
+      "Path": "/www.google.com",
+      "ID": "30f0e881-a0c2-4328-80df-41e8919daf24",
+      "Flag": "ph",
+      "Port": "443"
+    }
+  ],
+  "Vless": [
+    {
+      "Name": "Server test",
+      "Category": "0",
+      "DomainOrIP": "imperva.supervpn.website",
+      "SNI": "pldthome.com",
+      "Path": "/www.google.com",
+      "ID": "30f0e881-a0c2-4328-80df-41e8919daf24",
+      "Flag": "in",
+      "Port": "443"
+    }
+  ],
+  "ShadowSocks": [
+    {
+      "Name": "ShadowSocks 1",
+      "Category": "0",
+      "DomainOrIP": "fr02.proxysocks.xyz",
+      "Flag": "ph",
+      "ShadowPass": "NWI5M",
+      "Security": "chacha20-ietf-poly1305",
+      "Port": "8388"
+    }
+  ],
+  "Payloads": [
+    {
+      "Name": "imperva",
+      "Host": "imperva.supervpn.website",
+      "Icon": "youtube",
+      "Info": "for smart users"
+    },
+    {
+      "Name": "vmess host",
+      "Host": "nodz.ml",
+      "Icon": "google",
+      "Info": "google bughost"
+    },
+    {
+      "Name": "mobile legends",
+      "Host": "dns.mediatek-v2ray.com",
+      "Icon": "ml",
+      "Info": "mobile legend promo"
+    },
+    {
+      "Name": "globe",
+      "Host": "shop.globe.com.ph",
+      "Icon": "globe",
+      "Info": "for globe users"
+    },
+    {
+      "Name": "tnt",
+      "Host": "dns.mediatek-v2ray.com",
+      "Icon": "tnt",
+      "Info": "for talk n text users"
+    },
+    {
+      "Name": "Test payload",
+      "Host": "dns.mediatek-v2ray.com",
+      "Icon": "mtk",
+      "Info": "payload for testing"
+    }
+  ],
+  "Notice": "develope by jhoexii",
+  "V2rayID": "30f0e881-a0c2-4328-80df-41e8919daf24",
+  "Path": "/jhoe",
+  "VlessPath": "/jhoe",
+  "Version": "1.0.1"
+}
